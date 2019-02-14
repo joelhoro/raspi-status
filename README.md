@@ -15,5 +15,7 @@ to start the server:
 
 you can change the port in the package.json 'config' section. It defaults to 9999, so once the server is running, point your browser to http://raspberrypi:9999
 
+![Screenshot image](https://github.com/joelhoro/raspi-status/blob/master/screenshot.jpg)
+
 
 
