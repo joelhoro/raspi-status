@@ -2,22 +2,18 @@ var StartServer = require('./server').StartServer;
 
 var services = [
     {
-        name: 'gpio',
         commandline: 'gpio readall',
         interval: 250,
     },
     {
-        name: 'date',
         commandline: 'date',
         interval: 500,
     },
     {
-        name: 'top',
         commandline: 'top -b -n 1',
         interval: 1500,
     },
     {
-        name: 'vmstat',
         commandline: 'vmstat -s',
         interval: 1500,
     },
