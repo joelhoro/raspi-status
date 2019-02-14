@@ -1,0 +1,21 @@
+#statusbar { 
+    padding: 10px;
+    height: 60px; 
+    position: fixed; 
+    bottom:0%;
+    right: 0%;
+    width:100%; 
+    background-color: #c7e099; 
+    opacity: 1;
+  }
+
+
+.btn {
+    margin: 2px;
+}
+
+table{
+    overflow-y:scroll;
+    height:550px;
+    display:block;
+ }

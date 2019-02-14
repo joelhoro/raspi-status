@@ -1,0 +1,98 @@
+<title>PI status</title>
+<body>
+
+    <div ng-app='electronics'>
+        <div ng-controller='main'>
+            <!-- <select ng-model='activeKey'>
+                <option ng-repeat='key in infoKeys' >{{key}}</option>
+            </select> -->
+            <pre>
+{{info.date}}
+{{info.uptime}}
+{{info[activeKey]}}
+            </pre>
+            <span ng-if='showstatusbar' id='statusbar'>
+                <button type='button' class='btn btn-sm btn-{{(connected?"success":"danger")}}'>
+                    {{(connected? "Connected" : "Not connected")}}
+                </button >
+                <!-- <button type='button' class='btn btn-sm btn-warning'  ng-click='debug()'>Debug</button >
+                <button type='button' class='btn btn-sm btn-warning'  ng-click='sendMessage("stopserver")'>Stop server</button >
+                <button type='button' class='btn btn-sm btn-warning'  ng-click='sendMessage("shutdown")'>Shutdown PI</button > -->
+                <button type='button' 
+                    ng-click='setActiveKey(key)'
+                    class='btn btn-sm btn-{{(buttonActive[$index]?"warning":"info")}}' ng-repeat='key in allinfoKeys'>
+                    {{key}}
+                </button>
+                <button type='button' ng-click='shutdown(message)' class='btn-right btn btn-sm btn-danger' ng-repeat='message in ["shutdown","reboot"]'>
+                    {{message}}
+                </button>
+
+            </span>
+        </div>
+    </div> 
+
+</body>
+
+<link href="style.css" rel="stylesheet">
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+<style>
+    pre {
+        font-size: 10pt;
+    }
+    .btn-right {
+        float: right;
+    }
+</style>
+    
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src='/node_modules/angular/angular.js'></script>
+<script src="/node_modules/jquery/dist/jquery.js"></script>
+<script>
+// @ts-check
+"use strict";
+
+    angular.module('electronics',[])
+    .controller('main', function($scope) {
+        $scope.showstatusbar = true;
+        $scope.info = {};
+        
+        $scope.buttonActive = [];
+        $scope.setActiveKey = function(key) {
+            $scope.activeKey = key;
+        }
+        $scope.shutdown = function(message) {
+            console.log("Sending ", message);
+            socket.emit('shutdown', message);
+        }
+
+        var socket = io();
+        function setConnected(value) {
+            return () => {
+                $scope.connected = value;
+                $scope.$apply();
+            }
+        }
+
+        socket.on('message', data => {
+            if($scope.activeKey == undefined)
+                $scope.activeKey = data.key;
+
+            $scope.info[data.key] = data.value;
+            $scope.infoKeys = $(Object.keys($scope.info)).not(['date','uptime']).get();
+            $scope.allinfoKeys = Object.keys($scope.info);
+
+            var idx = $scope.allinfoKeys.indexOf(data.key);
+            $scope.buttonActive[idx] = true;
+            setInterval(() => $scope.buttonActive[idx] = false, 100);
+
+            $scope.$apply();
+        });
+        socket.on('connect', setConnected(true));
+        socket.on('disconnect', setConnected(false));
+
+    });
+     
+</script>
